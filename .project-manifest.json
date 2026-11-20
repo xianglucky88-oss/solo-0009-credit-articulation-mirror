@@ -1,0 +1,107 @@
+{
+  "project_shape": "backend",
+  "modules": [
+    {
+      "id": "edition",
+      "path": "articulation/edition.py",
+      "responsibility": "解析公告、课程码和生效日期"
+    },
+    {
+      "id": "store",
+      "path": "articulation/store.py",
+      "responsibility": "管理公告及变更表"
+    },
+    {
+      "id": "mirror",
+      "path": "articulation/mirror.py",
+      "responsibility": "原子应用与按日查询"
+    },
+    {
+      "id": "__main__",
+      "path": "articulation/__main__.py",
+      "responsibility": "提供文件导入与 JSON 查询入口"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "apply",
+      "name": "首次应用映射公告",
+      "entry": "python3 -B -m articulation --db demo.sqlite apply examples/opening.json",
+      "success": "两条课程映射写入",
+      "failure": "父版缺失时拒绝",
+      "verification": "python3 -B examples/smoke.py",
+      "module_ids": [
+        "edition",
+        "store",
+        "mirror",
+        "__main__"
+      ],
+      "steps": [
+        "执行 apply examples/opening.json",
+        "两条课程映射写入"
+      ]
+    },
+    {
+      "id": "lookup",
+      "name": "复原就读日对应映射",
+      "entry": "python3 -B -m articulation --db demo.sqlite lookup BAY-FIELD HIS-17 2025-12-31",
+      "success": "返回目标课程及来源",
+      "failure": "日期无效时拒绝",
+      "verification": "python3 -B examples/smoke.py",
+      "module_ids": [
+        "__main__",
+        "mirror",
+        "edition",
+        "store"
+      ],
+      "steps": [
+        "执行 lookup BAY-FIELD HIS-17 2025-12-31",
+        "返回目标课程及来源"
+      ]
+    },
+    {
+      "id": "replay",
+      "name": "重放已应用的公告",
+      "entry": "python3 -B -m articulation --db demo.sqlite apply examples/opening.json",
+      "success": "相同公告为空操作",
+      "failure": "同版异值不得覆盖历史",
+      "verification": "python3 -B examples/smoke.py",
+      "module_ids": [
+        "edition",
+        "store",
+        "mirror",
+        "__main__"
+      ],
+      "steps": [
+        "执行 apply examples/opening.json",
+        "相同公告为空操作"
+      ]
+    }
+  ],
+  "complexity": {
+    "mechanisms": [
+      {
+        "id": "apply",
+        "workflow_ids": [
+          "apply"
+        ],
+        "behavior": "两条课程映射写入"
+      },
+      {
+        "id": "lookup",
+        "workflow_ids": [
+          "lookup"
+        ],
+        "behavior": "返回目标课程及来源"
+      },
+      {
+        "id": "replay",
+        "workflow_ids": [
+          "replay"
+        ],
+        "behavior": "相同公告为空操作"
+      }
+    ]
+  },
+  "sample_source": "examples/opening.json"
+}

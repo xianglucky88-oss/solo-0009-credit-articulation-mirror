@@ -1,0 +1,83 @@
+{
+  "version": 2,
+  "task_source_schema_version": 1,
+  "project_domain": "数据工程",
+  "project_subdirection": "数仓与数据湖",
+  "delivery_profile": "local-unadmitted",
+  "baseline_tier": "local-workflow-baseline",
+  "generation_scope": {
+    "mode": "explicit",
+    "basis": "本轮只交付五个本地基线，未生成题库或评定题型容量。"
+  },
+  "production_source": "articulation",
+  "workflow_ids": [
+    "apply",
+    "lookup",
+    "replay"
+  ],
+  "entities": [
+    {
+      "id": "edition",
+      "label": "院校公告"
+    },
+    {
+      "id": "rule_change",
+      "label": "课程变更"
+    },
+    {
+      "id": "effective_day",
+      "label": "生效日"
+    }
+  ],
+  "state_machines": [
+    {
+      "subject": "rule_change",
+      "states": [
+        "unmapped",
+        "mapped",
+        "withdrawn"
+      ],
+      "transitions": [
+        "unmapped->mapped",
+        "mapped->mapped",
+        "mapped->withdrawn",
+        "withdrawn->mapped"
+      ]
+    }
+  ],
+  "capability_families": [
+    {
+      "family": "按日期和来源版本复核课程结果",
+      "occupied_by": [
+        "apply"
+      ],
+      "available": false
+    }
+  ],
+  "extension_seams": [
+    {
+      "id": "effective-view",
+      "anchor": "articulation/mirror.py",
+      "entry": "lookup",
+      "distinct_outcome": "按日期和来源版本复核课程结果",
+      "mechanism": "apply"
+    }
+  ],
+  "tension_points": [
+    {
+      "workflow_id": "apply",
+      "description": "两条课程映射写入",
+      "observable_failure": "父版缺失时拒绝"
+    },
+    {
+      "workflow_id": "lookup",
+      "description": "返回目标课程及来源",
+      "observable_failure": "日期无效时拒绝"
+    },
+    {
+      "workflow_id": "replay",
+      "description": "相同公告为空操作",
+      "observable_failure": "同版异值不得覆盖历史"
+    }
+  ]
+}

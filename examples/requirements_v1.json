@@ -1,0 +1,26 @@
+{
+  "family": "LIBERAL-ARTS",
+  "version": 1,
+  "parent": 0,
+  "effective": "2025-08-01",
+  "share": {"pairs": [["MAJOR", "MINOR"]]},
+  "programs": [
+    {
+      "id": "MAJOR",
+      "required_hundredths": 900,
+      "items": [
+        {"id": "M-HIST", "kind": "mandatory", "hundredths": 300, "courses": 1, "accepts": ["HIST-120"]},
+        {"id": "M-MATH", "kind": "mandatory", "hundredths": 400, "courses": 1, "accepts": ["MATH-200"]},
+        {"id": "M-CS", "kind": "elective", "hundredths": 300, "courses": 1, "accepts": ["CS-150"]}
+      ]
+    },
+    {
+      "id": "MINOR",
+      "required_hundredths": 500,
+      "items": [
+        {"id": "N-HIST", "kind": "mandatory", "hundredths": 300, "courses": 1, "accepts": ["HIST-120"]},
+        {"id": "N-LANG", "kind": "mandatory", "hundredths": 200, "courses": 1, "accepts": ["LANG-102"]}
+      ]
+    }
+  ]
+}

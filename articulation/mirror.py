@@ -27,14 +27,41 @@ def apply(path, document):
         return {'status': 'applied', 'edition': number, 'changes': len(rows), 'sha256': digest}
 
 
-def lookup(path, institution, course, attended_on):
-    key = code(institution), code(course), day(attended_on)
-    with database(path) as conn:
-        result = conn.execute('''
+def _resolve(conn, institution, course, attended_on, ceiling):
+    """Newest change on/before ``attended_on`` within visible editions."""
+    if ceiling is None:
+        return conn.execute('''
           SELECT r.target,r.hundredths,r.number AS edition,r.source_row,e.effective,e.sha AS sha256
           FROM rule_change r JOIN edition e USING(institution,number)
           WHERE r.institution=? AND r.course=? AND e.effective<=? ORDER BY r.number DESC LIMIT 1
-        ''', key).fetchone()
+        ''', (institution, course, attended_on)).fetchone()
+    return conn.execute('''
+      SELECT r.target,r.hundredths,r.number AS edition,r.source_row,e.effective,e.sha AS sha256
+      FROM rule_change r JOIN edition e USING(institution,number)
+      WHERE r.institution=? AND r.course=? AND e.effective<=? AND r.number<=?
+      ORDER BY r.number DESC LIMIT 1
+    ''', (institution, course, attended_on, ceiling)).fetchone()
+
+
+def visible_lookup(conn, institution, course, attended_on, ceiling):
+    """Resolve a course against the bulletin editions an intake had received.
+
+    ``ceiling`` is the newest edition number visible to the intake (0 means no
+    bulletin received).  The result distinguishes ``unmapped``, ``withdrawn``
+    and ``mapped``, and a mapped result carries the supporting bulletin row.
+    """
+    key = code(institution), code(course), day(attended_on)
+    result = _resolve(conn, key[0], key[1], key[2], ceiling)
+    if result is None:
+        return {'status': 'unmapped', 'visible_edition': ceiling}
+    return {'status': 'mapped' if result['target'] else 'withdrawn',
+            'visible_edition': ceiling, **dict(result)}
+
+
+def lookup(path, institution, course, attended_on):
+    key = code(institution), code(course), day(attended_on)
+    with database(path) as conn:
+        result = _resolve(conn, key[0], key[1], key[2], None)
     if result is None:
         return {'status': 'unmapped'}
     return {'status': 'mapped' if result['target'] else 'withdrawn', **dict(result)}

@@ -5,8 +5,8 @@
   "source_extensions": [
     ".py"
   ],
-  "build_command": "python3 -B -c 'from pathlib import Path; [compile(p.read_bytes(), str(p), \"exec\") for d in (\"articulation\", \"examples\") for p in Path(d).glob(\"*.py\")]'",
-  "testing": "deferred",
+  "build_command": "python3 -B -c 'from pathlib import Path; [compile(p.read_bytes(), str(p), \"exec\") for d in (\"articulation\", \"examples\", \"tests\") for p in Path(d).glob(\"*.py\")]'",
+  "testing": "python3 -B -m unittest discover -s tests -t .",
   "workflow_checks": [
     {
       "workflow_id": "apply",
@@ -19,6 +19,22 @@
     {
       "workflow_id": "replay",
       "command": "python3 -B examples/smoke.py"
+    },
+    {
+      "workflow_id": "plan",
+      "command": "python3 -B examples/demo.py"
+    },
+    {
+      "workflow_id": "sign",
+      "command": "python3 -B examples/demo.py"
+    },
+    {
+      "workflow_id": "reckon",
+      "command": "python3 -B examples/demo.py"
+    },
+    {
+      "workflow_id": "regression",
+      "command": "python3 -B -m unittest discover -s tests -t ."
     }
   ]
 }

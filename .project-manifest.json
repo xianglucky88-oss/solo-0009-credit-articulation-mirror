@@ -9,12 +9,32 @@
     {
       "id": "store",
       "path": "articulation/store.py",
-      "responsibility": "管理公告及变更表"
+      "responsibility": "管理公告、要求、批次、裁定与回执表"
     },
     {
       "id": "mirror",
       "path": "articulation/mirror.py",
-      "responsibility": "原子应用与按日查询"
+      "responsibility": "原子应用与按日、按可见版次查询"
+    },
+    {
+      "id": "requirements",
+      "path": "articulation/requirements.py",
+      "responsibility": "解析毕业要求公告与跨项目共用范围"
+    },
+    {
+      "id": "catalog",
+      "path": "articulation/catalog.py",
+      "responsibility": "应用和读取版本化毕业要求"
+    },
+    {
+      "id": "planner",
+      "path": "articulation/planner.py",
+      "responsibility": "按必修项数与认可学分的字典序精确裁定"
+    },
+    {
+      "id": "batch",
+      "path": "articulation/batch.py",
+      "responsibility": "受理、签转、更正、回执与毕业核算"
     },
     {
       "id": "__main__",
@@ -76,6 +96,58 @@
         "执行 apply examples/opening.json",
         "相同公告为空操作"
       ]
+    },
+    {
+      "id": "plan",
+      "name": "按可见公告与要求求最优裁定",
+      "entry": "python3 -B -m articulation --db demo.sqlite plan BATCH-A",
+      "success": "先最大化必修项数再最大化认可学分，并给出所有最优裁定共有的条目",
+      "failure": "批次超过精确规划规模时拒绝",
+      "verification": "python3 -B examples/demo.py",
+      "module_ids": [
+        "planner",
+        "batch",
+        "requirements",
+        "catalog"
+      ],
+      "steps": [
+        "受理批次并钉住可见公告版",
+        "计算字典序最优裁定与共有条目"
+      ]
+    },
+    {
+      "id": "sign",
+      "name": "分批签转与回执",
+      "entry": "python3 -B -m articulation --db demo.sqlite sign BATCH-A --mode common",
+      "success": "签下共有条目，或明示选择一套最优归属并核发回执",
+      "failure": "争用同一修课的第二笔不得双授",
+      "verification": "python3 -B examples/demo.py",
+      "module_ids": [
+        "batch",
+        "planner",
+        "store"
+      ],
+      "steps": [
+        "common 模式只签所有剩余最优裁定共有的条目",
+        "choose 模式签下所选归属并报告因此不能再签的同等最优归属"
+      ]
+    },
+    {
+      "id": "reckon",
+      "name": "毕业核算与更正冲突",
+      "entry": "python3 -B -m articulation --db demo.sqlite reckon BATCH-A",
+      "success": "回执学分冻结不变，并分清公告资格、项目归属或已签承诺的阻挡",
+      "failure": "更正后的要求容纳不下原签事实时停在冲突处",
+      "verification": "python3 -B examples/demo.py",
+      "module_ids": [
+        "batch",
+        "requirements",
+        "catalog"
+      ],
+      "steps": [
+        "从回执读取已签学分",
+        "对照钉住版与最新要求报告冲突类别"
+      ]
     }
   ],
   "complexity": {
@@ -100,6 +172,36 @@
           "replay"
         ],
         "behavior": "相同公告为空操作"
+      },
+      {
+        "id": "pinned-view",
+        "workflow_ids": [
+          "plan",
+          "reckon"
+        ],
+        "behavior": "旧批按受理时可见公告查证，新批按自己的可见公告查证"
+      },
+      {
+        "id": "lexicographic-ruling",
+        "workflow_ids": [
+          "plan",
+          "sign"
+        ],
+        "behavior": "先必修项数后认可学分，并识别所有最优裁定共有的条目"
+      },
+      {
+        "id": "atomic-hold",
+        "workflow_ids": [
+          "sign"
+        ],
+        "behavior": "争用同一修课的第二笔不双授，其余条目仍可办"
+      },
+      {
+        "id": "frozen-receipt",
+        "workflow_ids": [
+          "reckon"
+        ],
+        "behavior": "回执学分不被后来的公告或要求改写，冲突按类别停住"
       }
     ]
   },

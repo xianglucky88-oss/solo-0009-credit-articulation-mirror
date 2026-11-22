@@ -1,0 +1,13 @@
+{
+  "batch": "BATCH-A",
+  "received_on": "2026-02-01",
+  "requirements": {"family": "LIBERAL-ARTS", "version": 1},
+  "visible": {"BAY-FIELD": 1},
+  "attempts": [
+    {"attempt": "A1", "institution": "BAY-FIELD", "course": "HIS-17", "attended_on": "2025-09-01", "sitting": "HIST-RETAKE"},
+    {"attempt": "A2", "institution": "BAY-FIELD", "course": "HIS-17", "attended_on": "2026-01-10", "sitting": "HIST-RETAKE"},
+    {"attempt": "A3", "institution": "BAY-FIELD", "course": "MATH-9", "attended_on": "2025-09-05"},
+    {"attempt": "A4", "institution": "BAY-FIELD", "course": "LNG-40", "attended_on": "2025-09-06"},
+    {"attempt": "A5", "institution": "BAY-FIELD", "course": "CS-5", "attended_on": "2025-09-07"}
+  ]
+}

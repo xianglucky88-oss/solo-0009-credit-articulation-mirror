@@ -76,6 +76,24 @@
         "执行 apply examples/opening.json",
         "相同公告为空操作"
       ]
+    },
+    {
+      "id": "transfer",
+      "name": "受理转授协议与直认公告并按日查询",
+      "entry": "python3 -B -m articulation --db demo.sqlite apply-many examples/transfer.json",
+      "success": "同源课程在两所接收院校分别得到直认，且只经授权方中转",
+      "failure": "撤回中间段或未授权再转授时拒绝转授路径",
+      "verification": "python3 -B examples/scenarios.py",
+      "module_ids": [
+        "edition",
+        "store",
+        "mirror",
+        "__main__"
+      ],
+      "steps": [
+        "执行 apply-many examples/transfer.json",
+        "执行 lookup ELMDALE CS-10 2026-01-15"
+      ]
     }
   ],
   "complexity": {
@@ -100,6 +118,13 @@
           "replay"
         ],
         "behavior": "相同公告为空操作"
+      },
+      {
+        "id": "transfer",
+        "workflow_ids": [
+          "transfer"
+        ],
+        "behavior": "链式转授、政策选择、分歧并列与撤回区间"
       }
     ]
   },

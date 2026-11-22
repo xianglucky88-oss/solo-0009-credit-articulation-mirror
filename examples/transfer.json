@@ -1,0 +1,6 @@
+[
+{"institution":"MILLBROOK","edition":1,"parent":0,"effective":"2025-01-01","changes":[{"action":"map","source_course":"CS-10","target_course":"CS-101","hundredths":400}]},
+{"institution":"NORTHGATE","edition":1,"parent":0,"effective":"2025-02-01","agreements":[{"action":"recognize","grantor":"MILLBROOK","course":"CS-10","target_course":"NG-100","source_institution":"MILLBROOK","study_from":"2025-01-01","study_to":"2027-12-31","hundredths":400,"retransfer":true}]},
+{"institution":"SOUTHPORT","edition":1,"parent":0,"effective":"2025-02-01","agreements":[{"action":"recognize","grantor":"MILLBROOK","course":"CS-10","target_course":"SP-100","source_institution":"MILLBROOK","study_from":"2025-01-01","study_to":"2027-12-31","hundredths":350,"retransfer":false}]},
+{"institution":"ELMDALE","edition":1,"parent":0,"effective":"2025-03-01","agreements":[{"action":"recognize","grantor":"NORTHGATE","course":"NG-100","target_course":"EL-200","source_institution":"MILLBROOK","study_from":"2025-01-01","study_to":"2027-12-31","hundredths":300,"retransfer":true}]}
+]

@@ -1,3 +1,3 @@
-from .mirror import apply, lookup
+from .mirror import apply, apply_many, lookup, lookup_span
 
-__all__ = ['apply', 'lookup']
+__all__ = ['apply', 'apply_many', 'lookup', 'lookup_span']

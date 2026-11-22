@@ -1,5 +1,6 @@
-from .edition import bulletin, code, day
+from .edition import bulletin
 from .store import database
+from .settlement import lookup_current
 
 
 def apply(path, document):
@@ -28,13 +29,11 @@ def apply(path, document):
 
 
 def lookup(path, institution, course, attended_on):
-    key = code(institution), code(course), day(attended_on)
-    with database(path) as conn:
-        result = conn.execute('''
-          SELECT r.target,r.hundredths,r.number AS edition,r.source_row,e.effective,e.sha AS sha256
-          FROM rule_change r JOIN edition e USING(institution,number)
-          WHERE r.institution=? AND r.course=? AND e.effective<=? ORDER BY r.number DESC LIMIT 1
-        ''', key).fetchone()
-    if result is None:
-        return {'status': 'unmapped'}
-    return {'status': 'mapped' if result['target'] else 'withdrawn', **dict(result)}
+    """Daily counter answer on the catalog currently effective at the school.
+
+    Activated central reissues amend the historical rows in place, so the
+    ordinary query keeps working while returning corrected answers with their
+    reissue provenance.  Use ``settlement.lookup_as_of`` to replay an answer
+    as of an earlier system instant.
+    """
+    return lookup_current(path, institution, course, attended_on)

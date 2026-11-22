@@ -1,0 +1,23 @@
+{
+  "reissue": "CR-2026-01",
+  "amendments": [
+    {
+      "institution": "BAY-FIELD",
+      "edition": 1,
+      "effective": "2025-07-15",
+      "rows": [
+        {"action": "map", "source_course": "HIS-17", "target_course": "HIST-120", "hundredths": 300, "origin_row": 1},
+        {"action": "map", "source_course": "LNG-40", "target_course": "LANG-102", "hundredths": 250, "origin_row": 2}
+      ]
+    },
+    {
+      "institution": "COAST-STATE",
+      "edition": 1,
+      "effective": "2025-08-15",
+      "rows": [
+        {"action": "map", "source_course": "HIS-17", "target_course": "HIST-120", "hundredths": 300, "origin_row": 1},
+        {"action": "map", "source_course": "PHY-3", "target_course": "PHYS-200", "hundredths": 400}
+      ]
+    }
+  ]
+}
